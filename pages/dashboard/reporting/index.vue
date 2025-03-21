@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto p-4 max-w-7xl">
+  <div class="container mx-auto p-4 max-w-7xl h-[calc(100vh-6rem)]">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold text-gray-800">Fraud Reports</h1>
       <button @click="openReportModal" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
@@ -7,8 +7,9 @@
       </button>
     </div>
 
-    <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
-      <div class="overflow-x-auto">
+    <div class="bg-white shadow-md rounded-lg overflow-hidden flex flex-col h-[calc(100%-4rem)]">
+      <div class="overflow-y-auto flex-grow">
+        <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
@@ -62,8 +63,7 @@
         </table>
       </div>
       
-      <div class="px-6 py-4 flex items-center justify-between border-t border-gray-200">
-        <div class="text-sm text-gray-700">
+      <div class="px-6 py-4 flex items-center justify-between border-t border-gray-200 bg-white">        <div class="text-sm text-gray-700">
           Showing page {{ pagination.page }} of {{ pagination.totalPages }} 
           ({{ pagination.total }} total reports)
         </div>
@@ -85,6 +85,7 @@
             Next
           </button>
         </div>
+      </div>
       </div>
     </div>
 

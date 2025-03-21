@@ -1,6 +1,6 @@
 <template>
   <div class="container mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold mb-6">API Tokens (TO BE IMPLEMENTED )</h1>
+    <h1 class="text-2xl font-bold mb-6">API Tokens</h1>
     
     <div class="bg-white rounded-lg shadow-md p-6 mb-6">
       <h2 class="text-xl font-semibold mb-4">Create New API Token</h2>
@@ -70,6 +70,7 @@
     <div v-else class="text-center py-6 text-gray-500">
       You haven't created any API tokens yet.
     </div>
+    <ApiDocumentation />
   </div>
 </template>
 

@@ -1,4 +1,10 @@
 export default defineEventHandler(async (event) => {
+    if (!event.context.user) {
+        throw createError({
+          message: "Unauthorised Access not allowed",
+          statusCode: 401
+        })
+      }
     const { timeRange } = await readBody(event)
     const userId = event.context.user.id
   

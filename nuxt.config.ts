@@ -12,5 +12,5 @@ export default defineNuxtConfig({
     gemini: ''
   },
 
-  modules: ["@nuxtjs/tailwindcss"]
+  modules: ["@nuxtjs/tailwindcss", "@nuxtjs/mdc"]
 })

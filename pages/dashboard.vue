@@ -25,7 +25,7 @@ const isActive = (path) => {
 </script>
 
 <template>
-  <div class="h-screen flex overflow-hidden bg-gray-100">
+  <div class="min-h-screen flex bg-gray-100">
     <!-- Sidebar -->
     <div 
       :class="[
@@ -76,7 +76,7 @@ const isActive = (path) => {
             </span>
           </NuxtLink>
           
-          <!-- <NuxtLink to="/dashboard/analytics" :class="[
+          <NuxtLink to="/dashboard/analytics" :class="[
             'flex items-center px-2 py-3 text-base font-medium rounded-md group',
             isActive('/dashboard/analytics') ? 'bg-gray-900 text-white' : 'text-gray-400 hover:bg-gray-900 hover:text-white'
           ]">
@@ -86,7 +86,7 @@ const isActive = (path) => {
             <span :class="{ 'hidden': !sidebarOpen, 'block': sidebarOpen }">
               Analytics
             </span>
-          </NuxtLink> -->
+          </NuxtLink>
           
           <NuxtLink to="/dashboard/transaction" :class="[
             'flex items-center px-2 py-3 text-base font-medium rounded-md group',
