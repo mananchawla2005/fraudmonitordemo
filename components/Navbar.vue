@@ -1,13 +1,13 @@
 <template>
-  <nav class="bg-gradient-to-r from-blue-500 to-purple-600 py-4 px-6 flex items-center justify-between">
+  <nav class="bg-gradient-to-r from-gray-900 to-gray-800 py-4 px-6 flex items-center justify-between border-b border-gray-800">
     <div class="text-white font-bold text-2xl">
-      MySaaS
+      <span class="bg-gradient-to-r from-green-400 to-emerald-600 bg-clip-text text-transparent">FraudShield</span>
     </div>
     <div class="space-x-4">
-      <NuxtLink to="/login" class="bg-white text-blue-600 font-semibold px-4 py-2 rounded hover:bg-gray-100 transition">
+      <NuxtLink to="/login" class="text-gray-300 hover:text-green-400 font-semibold px-4 py-2 transition">
         Log In
       </NuxtLink>
-      <NuxtLink to="/signup" class="bg-blue-700 text-white font-semibold px-4 py-2 rounded hover:bg-blue-800 transition">
+      <NuxtLink to="/signup" class="bg-gradient-to-r from-green-500 to-emerald-700 text-white font-semibold px-4 py-2 rounded hover:opacity-90 transition">
         Sign Up
       </NuxtLink>
     </div>

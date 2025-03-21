@@ -1,0 +1,3 @@
+<template>
+    <ViewDashboardAnalytics/>
+</template>
