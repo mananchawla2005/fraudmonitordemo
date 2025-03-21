@@ -1,6 +1,28 @@
-# Nuxt Minimal Starter
+# Fraud Detection System
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A sophisticated AI-based fraud detection platform built with Nuxt 3, offering both manual review capabilities and API integration for automated fraud detection.
+
+## Overview
+
+This application provides tools for detecting fraudulent transactions through:
+- AI-powered analytics and pattern recognition
+- Manual review interfaces for fraud analysts
+- API endpoints for integration with existing systems
+- Comprehensive dashboard with real-time analytics
+
+## Tech Stack
+
+- **Framework**: [Nuxt 3](https://nuxt.com/)
+- **UI**: [Tailwind CSS](https://tailwindcss.com/)
+- **Database**: SQL (see schema.sql)
+
+## Features
+
+- Transaction monitoring and analysis
+- Fraud report creation and management
+- Real-time analytics dashboard
+- API endpoints for automated detection
+- User authentication and authorization
 
 ## Setup
 
