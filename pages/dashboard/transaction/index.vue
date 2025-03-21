@@ -6,6 +6,97 @@
           New Transaction
         </button>
       </div>
+
+      <div class="bg-white shadow-md rounded-lg overflow-hidden mb-4 p-4">
+        <div class="flex flex-wrap gap-4 items-end">
+          <div class="flex-1 min-w-[200px]">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Transaction ID</label>
+            <input
+              v-model="filters.transactionId"
+              type="text"
+              placeholder="Search by ID"
+              class="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div class="flex-1 min-w-[200px]">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+            <div class="flex items-center gap-2">
+              <input
+                v-model="filters.startDate"
+                type="date"
+                placeholder="Start"
+                class="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
+              />
+              <span>-</span>
+              <input
+                v-model="filters.endDate"
+                type="date"
+                placeholder="End"
+                class="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+          <div class="flex-1 min-w-[200px]">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Amount Range</label>
+            <div class="flex items-center gap-2">
+              <input
+                v-model="filters.minAmount"
+                type="number"
+                placeholder="Min"
+                class="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
+              />
+              <span>-</span>
+              <input
+                v-model="filters.maxAmount"
+                type="number"
+                placeholder="Max"
+                class="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+          <div class="flex-1 min-w-[200px]">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Payment Mode</label>
+            <select
+              v-model="filters.paymentMode"
+              class="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">All</option>
+              <option value="UPI">UPI</option>
+              <option value="CARD">Card</option>
+              <option value="NETBANKING">Net Banking</option>
+              <option value="WALLET">Wallet</option>
+            </select>
+          </div>
+          <div class="flex-1 min-w-[200px]">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Payee ID</label>
+            <input
+              v-model="filters.payeeId"
+              type="text"
+              placeholder="Enter payee ID"
+              class="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div class="flex-1 min-w-[200px]">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Fraud Status</label>
+            <select
+              v-model="filters.fraudStatus"
+              class="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">All</option>
+              <option value="fraud">Fraud</option>
+              <option value="safe">Safe</option>
+            </select>
+          </div>
+          <div class="flex gap-2">
+            <button @click="applyFilters" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+              Apply Filters
+            </button>
+            <button @click="clearFilters" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300">
+              Clear
+            </button>
+          </div>
+        </div>
+      </div>
   
       <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
         <div class="overflow-x-auto" style="max-height: calc(100vh - 250px);">
@@ -23,8 +114,8 @@
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody v-if="transactions.length > 0" class="bg-white divide-y divide-gray-200">
-              <tr v-for="transaction in transactions" :key="transaction.transaction_id">
+            <tbody v-if="filteredTransactions.length > 0" class="bg-white divide-y divide-gray-200">
+              <tr v-for="transaction in filteredTransactions" :key="transaction.transaction_id">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {{ transaction.transaction_id }}
                 </td>
@@ -191,10 +282,22 @@
 
 <script setup>
 const transactions = ref([]);
+const filteredTransactions = ref([]);
 const showTransactionModal = ref(false);
 const showDetailsModal = ref(false);
 const selectedTransaction = ref(null);
 const loading = ref(false);
+
+const filters = ref({
+  transactionId: '',
+  startDate: '',
+  endDate: '',
+  minAmount: '',
+  maxAmount: '',
+  paymentMode: '',
+  payeeId: '',
+  fraudStatus: ''
+});
 
 const pagination = ref({
   page: 1,
@@ -240,6 +343,7 @@ const loadTransactions = async () => {
 
     const data = await response.json();
     transactions.value = data.transactions;
+    filteredTransactions.value = data.transactions;
     pagination.value = {
       page: data.page,
       pageSize: data.pageSize,
@@ -251,6 +355,74 @@ const loadTransactions = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+const applyFilters = () => {
+  filteredTransactions.value = transactions.value.filter(transaction => {
+    // Transaction ID filter
+    if (filters.value.transactionId && !transaction.transaction_id.toLowerCase().includes(filters.value.transactionId.toLowerCase())) {
+      return false;
+    }
+    
+    // Date range filter
+    if (filters.value.startDate || filters.value.endDate) {
+      const transDate = new Date(transaction.transaction_date);
+      if (filters.value.startDate) {
+        const startDate = new Date(filters.value.startDate);
+        if (transDate < startDate) return false;
+      }
+      if (filters.value.endDate) {
+        const endDate = new Date(filters.value.endDate);
+        endDate.setHours(23, 59, 59, 999); // Set to end of day
+        if (transDate > endDate) return false;
+      }
+    }
+    
+    // Amount range filter
+    const amount = transaction.transaction_amount;
+    if (filters.value.minAmount && amount < Number(filters.value.minAmount)) {
+      return false;
+    }
+    if (filters.value.maxAmount && amount > Number(filters.value.maxAmount)) {
+      return false;
+    }
+    
+    // Payment mode filter
+    if (filters.value.paymentMode && transaction.transaction_payment_mode !== filters.value.paymentMode) {
+      return false;
+    }
+    
+    // Payee ID filter
+    if (filters.value.payeeId && transaction.payee_id !== filters.value.payeeId) {
+      return false;
+    }
+    
+    // Fraud status filter
+    if (filters.value.fraudStatus) {
+      if (filters.value.fraudStatus === 'fraud' && !transaction.is_fraud_predicted) {
+        return false;
+      }
+      if (filters.value.fraudStatus === 'safe' && transaction.is_fraud_predicted) {
+        return false;
+      }
+    }
+    
+    return true;
+  });
+};
+
+const clearFilters = () => {
+  filters.value = {
+    transactionId: '',
+    startDate: '',
+    endDate: '',
+    minAmount: '',
+    maxAmount: '',
+    paymentMode: '',
+    payeeId: '',
+    fraudStatus: ''
+  };
+  filteredTransactions.value = transactions.value;
 };
 
 const changePage = (page) => {
