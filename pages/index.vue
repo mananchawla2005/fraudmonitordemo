@@ -18,12 +18,12 @@
                             advanced analytics, and comprehensive reporting to keep your transactions secure.
                         </p>
                         <div class="flex flex-col sm:flex-row gap-4">
-                            <button class="bg-gradient-to-r from-green-500 to-emerald-700 text-white font-semibold px-6 py-3 rounded-lg hover:opacity-90 transition">
+                            <NuxtLink to="/signup" class="bg-gradient-to-r from-green-500 to-emerald-700 text-white font-semibold px-6 py-3 rounded-lg hover:opacity-90 transition">
                                 Get Started
-                            </button>
-                            <button class="border border-green-500 text-green-400 font-semibold px-6 py-3 rounded-lg hover:bg-green-500/10 transition">
+                            </NuxtLink>
+                            <NuxtLink to="/signup" class="border border-green-500 text-green-400 font-semibold px-6 py-3 rounded-lg hover:bg-green-500/10 transition">
                                 Learn More
-                            </button>
+                            </NuxtLink>
                         </div>
                     </div>
                     <div class="md:w-1/2">
@@ -89,9 +89,9 @@
                         <p class="text-gray-300 mb-8 max-w-2xl mx-auto">
                             Join thousands of businesses that trust our fraud detection platform to protect their transactions and customers.
                         </p>
-                        <button class="bg-gradient-to-r from-green-500 to-emerald-700 text-white font-semibold px-6 py-3 rounded-lg hover:opacity-90 transition">
+                        <NuxtLink to="/signup" class="bg-gradient-to-r from-green-500 to-emerald-700 text-white font-semibold px-6 py-3 rounded-lg hover:opacity-90 transition">
                             Start Now
-                        </button>
+                        </NuxtLink>
                     </div>
                 </div>
             </div>

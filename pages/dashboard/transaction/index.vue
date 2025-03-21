@@ -56,17 +56,13 @@
           </div>
           <div class="flex-1 min-w-[200px]">
             <label class="block text-sm font-medium text-gray-700 mb-1">Payment Mode</label>
-            <select
-              v-model="filters.paymentMode"
-              class="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">All</option>
-              <option value="UPI">UPI</option>
-              <option value="CARD">Card</option>
-              <option value="NETBANKING">Net Banking</option>
-              <option value="WALLET">Wallet</option>
-            </select>
-          </div>
+            <input
+                v-model="filters.paymentMode"
+                type="text"
+                placeholder="Enter payment mode"
+                class="border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-blue-500 focus:border-blue-500"
+            />
+        </div>
           <div class="flex-1 min-w-[200px]">
             <label class="block text-sm font-medium text-gray-700 mb-1">Payee ID</label>
             <input
@@ -388,7 +384,7 @@ const applyFilters = () => {
     }
     
     // Payment mode filter
-    if (filters.value.paymentMode && transaction.transaction_payment_mode !== filters.value.paymentMode) {
+    if (filters.value.paymentMode && transaction.transaction_payment_mode.toLowerCase() !== filters.value.paymentMode.toLowerCase()) {
       return false;
     }
     
