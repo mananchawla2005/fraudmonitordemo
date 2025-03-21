@@ -85,8 +85,10 @@ onMounted(async () => {
 
 async function fetchTokens() {
   try {
-    const { data } = await useFetch('/api/token/list')
-    tokens.value = data.value || []
+    const data = await $fetch('/api/token/list', {
+        method: "POST"
+    })
+    tokens.value = data || []
   } catch (error) {
     console.error('Error fetching tokens:', error)
   }
@@ -97,15 +99,15 @@ async function createToken() {
   
   try {
     isLoading.value = true
-    const { data } = await useFetch('/api/token/new', {
+    const data = await $fetch('/api/token/new', {
       method: 'POST',
       body: {
         name: tokenName.value
       }
     })
     
-    if (data.value && data.value.token) {
-      newToken.value = data.value.token
+    if (data && data.token) {
+      newToken.value = data.token
       tokenName.value = ''
       await fetchTokens()
     }
@@ -122,8 +124,11 @@ async function deleteToken(tokenId) {
   }
   
   try {
-    await useFetch(`/api/token/${tokenId}`, {
-      method: 'DELETE'
+    await useFetch(`/api/token/delete`, {
+      method: 'POST',
+      body: {
+        tokenId: tokenId
+      }
     })
     await fetchTokens()
   } catch (error) {
