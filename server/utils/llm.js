@@ -1,7 +1,7 @@
 import OpenAI from 'openai'
 
 const config = useRuntimeConfig()
-export const detectFraudPatterns = async (transactionData, customRules) => {
+export const detectFraudPatterns = async (transactionData) => {
   const client = new OpenAI({
     apiKey: config.gemini,
     baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
@@ -1093,16 +1093,13 @@ export const detectFraudPatterns = async (transactionData, customRules) => {
           "fraud_score": 0.06
         }
     ]
-  const systemPrompt = `You are a fraud detection expert. Custom rules are first applied and if it passed then use your learned knowledge from the following examples. Generate no reasoning just the json output. Analyze transaction data and strictly return the following JSON output:
+  const systemPrompt = `You are a fraud detection expert. Generate no reasoning just the json output. Analyze transaction data and strictly return the following JSON output:
 {
   "is_fraud_detected": true/false,
-  "fraud_source": "model",
+  "fraud_source": "model", // use rule if the fraud is detected by rule
   "fraud_reason": "Brief explanation",
   "fraud_score": 0.0 to 1.0
 }
-
-Custom Rules:
-${customRules}
 
 Example FRAUD Transactions:
 ${JSON.stringify(fraudExamples, null, 2)}
@@ -1127,7 +1124,7 @@ ${JSON.stringify(nonFraudExamples, null, 2)}
       max_tokens: 1024,
       response_format: { type: "json_object" }
     })
-    
+    console.log(response.choices[0].message.content)
     return JSON.parse(response.choices[0].message.content)
   } catch (error) {
     console.error('Error generating fraud analysis:', error)

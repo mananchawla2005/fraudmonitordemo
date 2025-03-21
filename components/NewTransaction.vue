@@ -72,6 +72,83 @@
               <input v-model="transaction.payee_id" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
             </div>
           </div>
+          
+          <div class="mt-6 border-t pt-4">
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="text-lg font-medium text-gray-800">Custom Rules</h3>
+              <button 
+                type="button" 
+                @click="addCustomRule"
+                class="text-sm px-3 py-1 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100"
+              >
+                Add Rule
+              </button>
+            </div>
+            
+            <div v-for="(rule, index) in customRules" :key="index" class="bg-gray-50 p-3 rounded-md mb-3">
+              <div class="flex justify-between items-center mb-2">
+                <span class="font-medium text-gray-700">Rule {{ index + 1 }}</span>
+                <button 
+                  type="button" 
+                  @click="removeCustomRule(index)" 
+                  class="text-red-500 hover:text-red-700"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <label class="block text-xs font-medium text-gray-600">Field</label>
+                  <select v-model="rule.field" class="w-full px-2 py-1 border border-gray-300 rounded-md text-sm">
+                    <option value="transaction_amount">Amount</option>
+                    <option value="transaction_channel">Channel</option>
+                    <option value="transaction_payment_mode">Payment Mode</option>
+                    <option value="payer_email">Email</option>
+                    <option value="payer_mobile">Mobile</option>
+                    <option value="payer_device">Device</option>
+                    <option value="payer_browser">Browser</option>
+                    <option value="payment_gateway_bank">Bank</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label class="block text-xs font-medium text-gray-600">Condition</label>
+                  <select v-model="rule.condition" class="w-full px-2 py-1 border border-gray-300 rounded-md text-sm">
+                    <option value="equals">Equals</option>
+                    <option value="contains">Contains</option>
+                    <option value="greater_than">Greater Than</option>
+                    <option value="less_than">Less Than</option>
+                    <option value="starts_with">Starts With</option>
+                    <option value="ends_with">Ends With</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label class="block text-xs font-medium text-gray-600">Value</label>
+                  <input 
+                    v-model="rule.value" 
+                    type="text" 
+                    class="w-full px-2 py-1 border border-gray-300 rounded-md text-sm"
+                    placeholder="Value to match"
+                  />
+                </div>
+              </div>
+              
+              <div class="mt-2">
+                <label class="block text-xs font-medium text-gray-600">Score Impact</label>
+                <input 
+                  v-model="rule.score_impact" 
+                  type="number" 
+                  step="0.1" 
+                  class="w-full px-2 py-1 border border-gray-300 rounded-md text-sm"
+                  placeholder="Score impact (e.g., 0.5, -0.3)"
+                />
+              </div>
+            </div>
+          </div>
   
           <div class="flex justify-end gap-3 mt-6">
             <button type="button" @click="closeModal" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
@@ -109,6 +186,7 @@
     payee_id: ''
   });
   
+  const customRules = ref([]);
   const loading = ref(false);
   const fraudResult = ref(null);
   
@@ -132,18 +210,37 @@
       payer_browser: '',
       payee_id: ''
     };
+    customRules.value = [];
     fraudResult.value = null;
+  };
+  
+  const addCustomRule = () => {
+    customRules.value.push({
+      field: 'transaction_amount',
+      condition: 'greater_than',
+      value: '',
+      score_impact: 0.5
+    });
+  };
+  
+  const removeCustomRule = (index) => {
+    customRules.value.splice(index, 1);
   };
   
   const submitTransaction = async () => {
     loading.value = true;
     try {
+      const payload = {
+        ...transaction.value,
+        custom_rules: customRules.value
+      };
+      
       const response = await fetch('/api/detect', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(transaction.value),
+        body: JSON.stringify(payload),
       });
       
       if (!response.ok) {

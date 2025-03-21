@@ -26,7 +26,48 @@ export default defineEventHandler(async (event) => {
     }
 
     let fraudResult
-    fraudResult = await detectFraudPatterns(transactionData, body.custom_rules || [])
+
+    if (body.custom_rules && body.custom_rules.length > 0) {
+      for (const rule of body.custom_rules) {
+        const value = transactionData[rule.field]
+        let isRuleViolated = false
+
+        switch (rule.condition) {
+          case 'equals':
+            isRuleViolated = value === rule.value
+            break
+          case 'contains':
+            isRuleViolated = value?.includes(rule.value)
+            break
+          case 'greater_than':
+            isRuleViolated = parseFloat(value) > parseFloat(rule.value)
+            break
+          case 'less_than':
+            isRuleViolated = parseFloat(value) < parseFloat(rule.value)
+            break
+          case 'starts_with':
+            isRuleViolated = value?.startsWith(rule.value)
+            break
+          case 'ends_with':
+            isRuleViolated = value?.endsWith(rule.value)
+            break
+        }
+
+        if (isRuleViolated) {
+          fraudResult = {
+            is_fraud_detected: true,
+            fraud_source: 'rule',
+            fraud_reason: `Rule violation: ${rule.field} ${rule.condition} ${rule.value}`,
+            fraud_score: 1
+          }
+          break
+        }
+      }
+    }
+
+    if (!fraudResult) {
+      fraudResult = await detectFraudPatterns(transactionData, body.custom_rules || [])
+    }
 
     try {
       const customRulesJson = body.custom_rules ? JSON.stringify(body.custom_rules) : null;
@@ -37,8 +78,8 @@ export default defineEventHandler(async (event) => {
           transaction_channel, transaction_payment_mode, payment_gateway_bank,
           payer_email, payer_mobile, payer_card_brand, payer_device, 
           payer_browser, payee_id, is_fraud_predicted, fraud_source, 
-          fraud_reason, fraud_score, user_id, custom_rules
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+          fraud_reason, fraud_score, user_id
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
       `
       const insertValues = [
         body.transaction_id,
@@ -57,8 +98,7 @@ export default defineEventHandler(async (event) => {
         fraudResult.fraud_source,
         fraudResult.fraud_reason,
         fraudResult.fraud_score,
-        userId,
-        customRulesJson
+        userId
       ]
       
       await pool.query(insertQuery, insertValues)
